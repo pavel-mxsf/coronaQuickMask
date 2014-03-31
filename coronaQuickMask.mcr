@@ -1,12 +1,39 @@
-(
+/* 
+Version: v0.01
+Written by Pavel Vojacek
+codepoint.eu
+license MIT
+Copyright (c) 2014 Pavel Vojacek
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+*/
+macroScript quickMask category:"corona" buttonText:"quickMask" tooltip:"Render quick mask from selection" silentErrors:true (
 local elman = maxOps.GetRenderElementMgr #Production
 local storedElements	
 local maskElement
 local gstore
 local workingGid = 128
 local selectionStore =#()
-local timelimit = renderers.current.progressive_time_limit
-local passlimit = renderers.current.Progressive_rendering_max_passes
+
 struct elementsSettings (
 	enabled, 
 	elementsActive=#(),
@@ -27,14 +54,13 @@ struct elementsSettings (
 	)
 	
 struct storeG (
-	Gid = 128,
+	Gid = workingGid,
 	storedObjects = #(),	
 	on create do (
 		for o in geometry where o.gbufferChannel == Gid do (
 			append storedObjects o
 			o.gbufferChannel = 0
-			)
-			
+			)			
 		),	
 	fn restore = (
 		for o in storedobjects do o.gbufferChannel = Gid		
@@ -42,10 +68,6 @@ struct storeG (
 	)	
 
 struct gSetting (obj, gid)	
-	
---re = theManager.GetRenderElement 0
---re.use_mask_mono_nodes
---CoronaRenderer.CoronaFp.renderElements true
 
 fn storeElements = (	
 	storedElements = elementsSettings()
@@ -57,7 +79,6 @@ fn restoreElements = (
 	
 fn AddMaskElement gid= (
 	maskElement = CMasking_Mask elementname:"quickmask"
-	showproperties maskElement
 	maskElement.Mask_mono_Gbuffer_object = gid
 	maskElement.use_mask_mono_object = true
 	elman.addrenderelement maskelement	
@@ -78,7 +99,7 @@ fn restoreGBuffers = (
 fn setSelectionGid gid = (
 	for o in $ do 
 		(
-		append selectionStore (gSetting obj:o gid:gid)
+		append selectionStore (gSetting obj:o gid:o.gbufferChannel)
 		o.gbufferChannel = gid	
 		)
 	)	
@@ -93,20 +114,21 @@ fn renderMask = (
 			storeElements()	
 			AddMaskElement workingGid
 			storeGBuffers workingGid
-			setSelectionGid workingGid
+			setSelectionGid workingGid						
 			renderers.current.progressive_time_limit = 0
 			renderers.current.Progressive_rendering_max_passes = 3
-			CoronaRenderer.CoronaFp.renderElements true
+			timelimit = renderers.current.progressive_time_limit
+			passlimit = renderers.current.Progressive_rendering_max_passes
+			CoronaRenderer.CoronaFp.renderElements true -- RENDER 
 			renderers.current.progressive_time_limit = timelimit
 			renderers.current.Progressive_rendering_max_passes = passlimit
 			CoronaRenderer.CoronaFp.showvfb()
-			CoronaRenderer.CoronaFp.setDisplayedChannel 2
+			CoronaRenderer.CoronaFp.setDisplayedChannel 2			
 			restoreSelectionGid()	
 			restoreGBuffers()
 			restoreElements()	
 			removeMaskElement()
 		)
-	)
-	
-renderMask()
+	)	
+on execute do renderMask()
 )
