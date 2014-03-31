@@ -1,5 +1,5 @@
 coronaQuickMask
-====================
+===============
 
 Render super fast mask from selection.
 
@@ -9,6 +9,12 @@ Download coronaQuickmask.mcr and copy to usermacros folder (c:\Users\username\Ap
 Drag and drop to viewport should work too.
 In Customize - Customize User Interface select Quads - category corona and drag "Render quick mask from selection" to the right window.
 You should have Render quick mask from selection on right-click quad menu.
+
+# How it works
+
+It uses Render only elements function from corona (Actions rollout) nad CMasking_mask element. 
+Adds Element - store objects GBuf IDs - renders - shows output - reverts GBuf IDs changes.
+Output is antialiased with 3 corona passes (other settings untouched).
 
 # TODO
 
