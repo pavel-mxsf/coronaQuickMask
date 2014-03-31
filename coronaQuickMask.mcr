@@ -114,11 +114,11 @@ fn renderMask = (
 			storeElements()	
 			AddMaskElement workingGid
 			storeGBuffers workingGid
-			setSelectionGid workingGid						
+			setSelectionGid workingGid			
+			timelimit = renderers.current.progressive_time_limit
+			passlimit = renderers.current.Progressive_rendering_max_passes	
 			renderers.current.progressive_time_limit = 0
 			renderers.current.Progressive_rendering_max_passes = 3
-			timelimit = renderers.current.progressive_time_limit
-			passlimit = renderers.current.Progressive_rendering_max_passes
 			CoronaRenderer.CoronaFp.renderElements true -- RENDER 
 			renderers.current.progressive_time_limit = timelimit
 			renderers.current.Progressive_rendering_max_passes = passlimit
@@ -128,6 +128,7 @@ fn renderMask = (
 			restoreGBuffers()
 			restoreElements()	
 			removeMaskElement()
+			renderSceneDialog.commit()
 		)
 	)	
 on execute do renderMask()
