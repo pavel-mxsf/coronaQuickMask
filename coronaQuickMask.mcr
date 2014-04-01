@@ -60,7 +60,14 @@ struct storeG (
 		for o in geometry where o.gbufferChannel == Gid do (
 			append storedObjects o
 			o.gbufferChannel = 0
-			)			
+			)	
+		for o in geometry where classof o == Forest_Lite or classof o == Forest_Pro do
+			(
+				for f in o.cobjlist where f.gbufferChannel==Gid do (
+					append storedObjects f
+					f.gbufferChannel = 0
+					)
+				)
 		),	
 	fn restore = (
 		for o in storedobjects do o.gbufferChannel = Gid		
@@ -99,8 +106,16 @@ fn restoreGBuffers = (
 fn setSelectionGid gid = (
 	for o in $ do 
 		(
-		append selectionStore (gSetting obj:o gid:o.gbufferChannel)
-		o.gbufferChannel = gid	
+		if  classof o == Forest_Lite or classof o == Forest_Pro then (
+			for f in o.cobjlist do (
+					append selectionStore (gSetting obj:f gid:f.gbufferChannel)
+					f.gbufferChannel = gid
+					)
+			)
+		else (
+			append selectionStore (gSetting obj:o gid:o.gbufferChannel)
+			o.gbufferChannel = gid	
+		)
 		)
 	)	
 	
