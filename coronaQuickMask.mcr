@@ -111,6 +111,8 @@ fn restoreSelectionGid = (
 fn renderMask = (
 	if $!=undefined then
 		(
+			rsd = renderSceneDialog.isOpen()
+			renderSceneDialog.close()
 			storeElements()	
 			AddMaskElement workingGid
 			storeGBuffers workingGid
@@ -118,18 +120,18 @@ fn renderMask = (
 			timelimit = renderers.current.progressive_time_limit
 			passlimit = renderers.current.Progressive_rendering_max_passes	
 			renderers.current.progressive_time_limit = 0
-			renderers.current.Progressive_rendering_max_passes = 3
-			renderSceneDialog.commit()
+			renderers.current.Progressive_rendering_max_passes = 3			
 			CoronaRenderer.CoronaFp.renderElements true -- RENDER 
 			renderers.current.progressive_time_limit = timelimit
 			renderers.current.Progressive_rendering_max_passes = passlimit
+			if rsd then renderSceneDialog.open()
 			CoronaRenderer.CoronaFp.showvfb()
 			CoronaRenderer.CoronaFp.setDisplayedChannel 2			
 			restoreSelectionGid()	
 			restoreGBuffers()
 			restoreElements()	
 			removeMaskElement()
-			renderSceneDialog.commit()
+			
 		)
 	)	
 on execute do renderMask()
