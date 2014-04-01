@@ -19,6 +19,10 @@ It uses Render only elements function from corona (Actions rollout) nad CMasking
 Adds Element - store objects GBuf IDs - renders - shows output - reverts GBuf IDs changes.
 Output is antialiased with 3 corona passes (other settings untouched).
 
+# Updates
+
+- 01/04/2014 itoo forest support
+
 # TODO
 
 - ?
